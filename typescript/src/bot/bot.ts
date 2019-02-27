@@ -15,18 +15,18 @@ export class Bot extends AbstractBot {
     /** This method does not return plant bomb moves in order to protect the player. */
     getRandomMove() {
         const randomMove = Math.floor(Math.random() * 5);
-        const actions = new PlayerAction();
+        const action = new PlayerAction();
 
         if (randomMove === 0) {
-            actions.move_down = true;
+            action.move_down = true;
         } else if (randomMove === 1) {
-            actions.move_up = true;
+            action.move_up = true;
         } else if (randomMove === 2) {
-            actions.move_left = true;
+            action.move_left = true;
         } else if (randomMove === 3) {
-            actions.move_right = true;
+            action.move_right = true;
         }
 
-        return actions;
+        return action;
     }
 }

@@ -5,6 +5,7 @@ export type PlayerId = string;
 
 export interface Player extends GameObject {
     playerId: PlayerId;
+    /** The inputs of this player. */
     actions: PlayerAction;
     /** The amount of pixels that the player moves at every game tick */
     speed: number;
