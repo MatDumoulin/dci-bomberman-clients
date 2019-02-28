@@ -1,11 +1,10 @@
 from websocket import create_connection
 from colyseus.connection import Connection
+from colyseus.room import Room
 import time
+import threading
 
-try:
-    import thread
-except ImportError:
-    import _thread as thread
+thread = None
 
 def doAction():
     room = Room(conn)
@@ -22,8 +21,10 @@ def on_close(ws):
 
 def on_open(ws):
     print("Socket connection opened!")
-    doAction()
+    thread = threading.Thread(target=doAction)
+    thread.start()
 
 
 print("Hi ya")
 conn = Connection("ws://localhost:3000", on_open=on_open, on_close=on_close, on_error=on_error, on_message=on_message)
+conn.run_forever()
