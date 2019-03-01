@@ -10,6 +10,7 @@ class Client:
 
     # id -> room
     rooms = {}
+    connecting_rooms = {}
 
     def __init__(self, url, options = {}):
         self.hostname = url
@@ -19,50 +20,55 @@ class Client:
     def connect(self, colyseusid, options = {}):
         self.id = colyseusid if colyseusid is not None else ""
 
-        self.connection = Connection(self.buildEndpoint('', options))
-"""         self.connection.onmessage = self.onMessageCallback.bind(self)
+        self.connection = Connection(self.build_endpoint('', options))
+        self.connection.onmessage = lambda: self.on_message_callback()
+        """
         self.connection.onclose = (e) => self.onClose.dispatch(e)
         self.connection.onerror = (e) => self.onError.dispatch(e)
-
+        """
         # check for id on cookie
-        self.connection.onopen = () => {
+        self.connection.on_open() => {
             if (self.id) {
                 self.onOpen.dispatch()
             }
-        } """
+        }
+
+    def dispatch_connection_opened(self):
+        if self.id is not None:
+            self.onOpen.dispatch()
 
 
-    def createRoom(self, room_name, options = {}):
+    def create_room(self, room_name, options = {}):
         return Room(room_name, options)
 
 
-    def createRoomRequest(self, room_name, options, reuse_room_instance=None, retryCount=0):
+    def create_room_request(self, room_name, options, reuse_room_instance=None, retry_count=0):
         options.requestId += 1
-        room = reuse_room_instance if reuse_room_instance is not None else self.createRoom(room_name, options)
+        room = reuse_room_instance if reuse_room_instance is not None else self.create_room(room_name, options)
 
         # remove references on leaving
-        room.on_leave.add_once(lambda: self.removeRoom(room.id, options.requestId))
+        room.on_leave.add_once(lambda: self.remove_room(room.id, options.requestId))
 
         # retry joining the room in case the server couldn't matchmake into it
         if options.retryTimes:
-            room.on_error.add_once(lambda: self.retryCreateRoomRequest(room_name, options, reuse_room_instance, retryCount))
+            room.on_error.add_once(lambda: self.retry_create_room_request(room_name, options, reuse_room_instance, retry_count))
 
-        self.connectingRooms[ options.requestId ] = room
-        self.connection.send([Protocol.JOIN_ROOM, roomName, options])
+        self.connecting_rooms[ options.requestId ] = room
+        self.connection.send([Protocol.JOIN_ROOM, room_name, options])
         return room
 
 
-    def removeRoom(self, roomId, requestId)
+    def remove_room(self, roomId, requestId):
         del self.rooms[roomId]
-        del self.connectingRooms[requestId]
+        del self.connecting_rooms[requestId]
 
 
-    def retryCreateRoomRequest(self, room_name, room, options, retry_count=0):
+    def retry_create_room_request(self, room_name, room, options, retry_count=0):
         if not room.has_joined and retry_count <= options.retry_times:
-            self.createRoomRequest(room_name, options, room, retry_count + 1)
+            self.create_room_request(room_name, options, room, retry_count + 1)
 
 
-    def buildEnpoint(self, path = "", options = {}):
+    def build_endpoint(self, path = "", options = {}):
         # append colyseusid to connection string.
         params = ["colyseusid=" + str(self.id)]
 
@@ -73,7 +79,7 @@ class Client:
 
 
     # TODO: Gerer les methodes suivantes
-    def onMessageCallback(self):
+    def on_message_callback(self):
         # USER_ID
         # Protocol.ROOM_LIST
         pass
