@@ -1,30 +1,30 @@
-from websocket import create_connection
-from colyseus.connection import Connection
+from colyseus.client import Client
 from colyseus.room import Room
-import time
 import threading
 
 thread = None
 
 def doAction():
-    room = Room(conn)
+    room = Room(client.connection)
     room.send("Hi there!")
 
-def on_message(ws, message):
+def on_message(message):
     print("Message:", message)
 
-def on_error(ws, error):
+def on_error(error):
     print("An error occurred with the socket:", error)
 
-def on_close(ws):
+def on_close():
     print("### closed ###")
 
-def on_open(ws):
+def on_open():
     print("Socket connection opened!")
     thread = threading.Thread(target=doAction)
     thread.start()
 
 
 print("Hi ya")
-conn = Connection("ws://localhost:3000", on_open=on_open, on_close=on_close, on_error=on_error, on_message=on_message)
-conn.run_forever()
+client = Client("ws://localhost:3000")
+client.on_open.add(on_open)
+
+client.connection.run_forever()
