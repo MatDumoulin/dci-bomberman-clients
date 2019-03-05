@@ -1,22 +1,21 @@
-# Observer pattern wrapped in an object.
 class Signal:
     def __init__(self):
-        self.add_listeners = []
-        self.add_once_listeners = []
+        self.listeners = []
+        self.listeners_once = []
 
-    def add(self, callback):
-        self.add_listeners.append(callback)
+    def add(self, listener):
+        self.listeners.append(listener)
 
-    def add_once(self, callback):
-        self.add_once_listeners.append(callback)
+    def add_once(self, listener):
+        self.listeners_once.append(listener)
 
-    def dispatch(self, data=None):
-        callback = lambda cb: cb(data) if data is not None else cb()
+    def dispatch(self, data = None):
+        for listener in self.listeners:
+            listener(data) if data is not None else listener()
+        for listener in self.listeners_once:
+            listener(data) if data is not None else listener()
+        self.listeners_once = []
 
-        for listener in self.add_once_listeners:
-            callback(listener)
-
-        self.add_once_listeners = []
-
-        for listener in self.add_listeners:
-            callback(listener)
+    def remove_all(self):
+        self.listeners = []
+        self.listeners_once = []

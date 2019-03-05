@@ -1,12 +1,22 @@
 import msgpack
+import array
 from colyseus.signal import Signal
 from colyseus.webSocketClient import WebSocketClient
 
 # Wraps the socket client into its own thread
 class Connection:
-    def __init__(self, url, on_error=None, on_close=None):
+    def __init__(self, url):
+        self.on_open = Signal()
         self.on_message = Signal()
-        self.ws = WebSocketClient(url, on_message=lambda ws, m: self.on_message_callback(m), on_error=on_error, on_close=on_close)
+        self.on_close = Signal()
+        self.on_error = Signal()
+
+        self.ws = WebSocketClient(
+            url,
+            on_open=lambda ws: self.on_open.dispatch(),
+            on_message=lambda ws, m: self.on_message_callback(m),
+            on_error=lambda ws, e: self.on_error.dispatch(e),
+            on_close=lambda *ws: self.on_close.dispatch())
 
     def send(self, message):
         encodedMessage = msgpack.packb(message)
@@ -16,10 +26,13 @@ class Connection:
     def run_forever(self):
         self.ws.run_forever()
 
-    def on_open(self, on_open_callback):
-        self.ws.on_open(on_open_callback)
-
     def on_message_callback(self, message):
-        decodedMessage = msgpack.unpackb(message, raw=False)
+        decodedMessage = msgpack.unpackb(message, ext_hook=ext_hook, raw=False)
         print(decodedMessage)
         self.on_message.dispatch(decodedMessage)
+
+
+def ext_hook(code, data):
+    if code == 0:
+        return None
+    return msgpack.ExtType(code, data)
