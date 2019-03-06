@@ -1,5 +1,4 @@
 import msgpack
-import array
 from colyseus.signal import Signal
 from colyseus.webSocketClient import WebSocketClient
 
@@ -28,10 +27,9 @@ class Connection:
 
     def on_message_callback(self, message):
         decodedMessage = msgpack.unpackb(message, ext_hook=ext_hook, raw=False)
-        print(decodedMessage)
         self.on_message.dispatch(decodedMessage)
 
-
+# Handle undefined and null and map them to None
 def ext_hook(code, data):
     if code == 0:
         return None

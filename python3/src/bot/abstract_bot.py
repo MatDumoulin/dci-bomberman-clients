@@ -1,8 +1,9 @@
 import time
 from abc import ABC, abstractmethod
 from colyseus.room import Room
-from models import PlayerAction, GameState
-from src.config import PLAYER_ID
+from models.game_state import GameState
+from models.player import PlayerAction
+from config import PLAYER_ID
 
 """
 The parent class of the bot. This is where all the mechanic is put
@@ -21,6 +22,8 @@ class AbstractBot(ABC):
     def __init__(self, game):
         self.id = PLAYER_ID
         self._game = game
+        # The current state of the game. DO NOT MUTATE THIS OBJECT, it will be overwritten everytime the state changes.
+        self.state = None
         self.listenOnStateChange()
 
     def __del__(self):
@@ -49,7 +52,7 @@ class AbstractBot(ABC):
     def leaveGame(self):
         self._checkForAction = False
 
-        if self._game and self._game.hasJoined:
+        if self._game and self._game.has_joined():
             self._game.leave()
 
 
@@ -79,10 +82,9 @@ class AbstractBot(ABC):
             print("Stand still")
 
     def listenOnStateChange(self):
-        if self._game and self._game.hasJoined:
-            # TODO: Implement state change listener
-            pass
-            """ self._game.onStateChange.add((state: GameState) => {
-                self.state = state;
-            }) """
+        if self._game:
+            self._game.on_state_change.add(lambda state: self.set_state(state))
+
+    def set_state(self, state):
+        self.state = state
 

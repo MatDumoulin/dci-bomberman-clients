@@ -2,6 +2,7 @@ from colyseus.connection import Connection
 from colyseus.room import Room
 from colyseus.protocol import Protocol
 from colyseus.signal import Signal
+from colyseus.storage import Storage
 from config import PLAYER_ID
 
 class Client:
@@ -17,7 +18,7 @@ class Client:
         self.on_message = Signal()
         self.on_close = Signal()
         self.on_error = Signal()
-        self.connect(PLAYER_ID, options)
+        self.connect(Storage.get_item('colyseusid'), options)
 
     def join(self, room_name, options = {}):
         return self.create_room_request(room_name, options)
@@ -81,16 +82,15 @@ class Client:
             value = to_string if not isinstance(options[name], bool) else to_string.lower()
             params.append(name + "=" + value)
 
-        return self.hostname + "/" + path + "?$" + '&'.join(params)
+        return self.hostname + "/" + path + "?" + '&'.join(params)
 
 
-    # TODO: Gerer les methodes suivantes
     def on_message_callback(self, message):
         code = message[0]
 
         if code == Protocol.USER_ID:
-            if self.id == None or self.id == "":
-                self.id = message[1]
+            Storage.set_item('colyseusid', message[1])
+            self.id = message[1]
             self.on_open.dispatch()
         elif code == Protocol.ROOM_LIST:
             pass
@@ -107,7 +107,6 @@ class Client:
         elif code == Protocol.JOIN_ERROR:
             print('colyseus.py: server error:', message[2])
             self.on_error.dispatch(message[2])
+        else:
+            self.on_message.dispatch(message)
 
-
-        print("on_message_callback client", message)
-        self.on_message.dispatch(message)

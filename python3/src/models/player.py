@@ -16,10 +16,18 @@ class Player(GameObject):
 
 # Moves that the player can do.
 class PlayerAction:
-    move_up = False
-    move_down = False
-    move_left = False
-    move_right = False
-    plant_bomb = False
+    # move_up = False
+    # move_down = False
+    # move_left = False
+    # move_right = False
+    # plant_bomb = False
+    pass
 
-
+def player_action_factory():
+    action = {}
+    action["move_up"] = False
+    action["move_down"] = False
+    action["move_left"] = False
+    action["move_right"] = False
+    action["plant_bomb"] = False
+    return action
