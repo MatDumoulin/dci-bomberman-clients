@@ -8,5 +8,4 @@ COPY tslint.json /client
 RUN npm install
 RUN npm build
 
-COPY src /client/src
 CMD ["npm", "start"]
