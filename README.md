@@ -3,20 +3,26 @@ Clients to use for AI development in order to play the dci-bomberman game.
 
 ## typescript
 Your code goes in typescript/src/bot/bot.ts
-`cd typescript`
-`npm install`
-`npm start`
+```
+cd typescript
+npm install
+npm start
+```
 
 ## python3
 Your code goes in python3/src/bot.py
-`cd python3`
-`npm install`
-`python3 src/main.py`
+```
+cd python3
+npm install
+python3 src/main.py
+```
 
 ## docker
 From either the python3 or typescript folder:
-`docker build -t dci-bomberman-client .`
-`docker run -it --rm dci-bomberman-client`
+```
+docker build -t dci-bomberman-client .
+docker run -it --rm dci-bomberman-client
+```
 
 # game_state
 ```
