@@ -17,11 +17,20 @@ npm install
 python3 src/main.py
 ```
 
-## docker
-From either the python3 or typescript folder:
+## docker (typescript)
+Your code goes in typescript/src/bot/bot.ts:
 ```
+cd typescript
 docker build -t dci-bomberman-client .
-docker run -it --rm dci-bomberman-client
+docker run -it --rm -v $(pwd)/src:/client/src dci-bomberman-client
+```
+
+## docker (python3)
+Your code goes in python3/src/bot.py
+```
+cd python3 
+docker build -t dci-bomberman-client .
+docker run -it --rm -v $(pwd)/src:/client/src dci-bomberman-client
 ```
 
 # game_state

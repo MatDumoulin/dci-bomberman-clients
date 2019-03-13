@@ -10,5 +10,4 @@ RUN npm build
 
 RUN apt-get install python3
 
-COPY src /client/src
 CMD ["python3", "src/main.py"]

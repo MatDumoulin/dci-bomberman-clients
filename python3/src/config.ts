@@ -15,5 +15,5 @@ function makeid() {
 export const config = {
     loadBalancerHost: "shopiflag.com",
     loadBalancerPort: 2999,
-    playerId: makeid()
+    playerId: "jfgauron"
 };
