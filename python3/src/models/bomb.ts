@@ -16,4 +16,11 @@ export interface Bomb extends GameObject {
     row: number;
     /** The column of the bomb in the game map */
     col: number;
+
+    /**
+     * The power of the explosion for this bomb, in map cell.
+     * This power is the number of cells that will be affected by the bomb,
+     * starting from the position of the bomb to the end of one side of the explosion.
+     */
+    bombPower: number;
 }

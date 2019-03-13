@@ -22,7 +22,7 @@ while 1:
         time.sleep(0.1)
         continue
 
-    print(out)
+    #print(out)
     
     data = out[:out.rfind("</END>")]
     data = data[data.rfind("<START>")+len("<START>"):].strip()
@@ -33,7 +33,7 @@ while 1:
         choice = Bot.do_action(game_state)
         in_write.write(choice + "\n")
         in_write.flush()
-        print("Sent: " + choice)
+        #print("Sent: " + choice)
     except:
         pass 
 

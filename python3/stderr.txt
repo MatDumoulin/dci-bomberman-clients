@@ -1,2 +1,1 @@
-(node:7272) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 line listeners added. Use emitter.setMaxListeners() to increase limit
-SIGINT
+(node:7880) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 line listeners added. Use emitter.setMaxListeners() to increase limit

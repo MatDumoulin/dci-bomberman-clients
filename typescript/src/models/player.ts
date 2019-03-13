@@ -1,3 +1,4 @@
+
 import { GameObject } from "./game-object";
 import { Bomb } from "./bomb";
 
@@ -14,6 +15,13 @@ export interface Player extends GameObject {
     /** All the bombs currently in the map that were dropped by the player */
     bombs: Bomb[];
     isAlive: boolean;
+
+    /**
+     * The power of the explosion for this bomb, in map cell.
+     * This power is the number of cells that will be affected by the bomb,
+     * starting from the position of the bomb to the end of one side of the explosion.
+     */
+    bombPower:number;
 }
 
 // Moves that the player can do.
