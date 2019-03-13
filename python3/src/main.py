@@ -1,61 +1,40 @@
-import threading
+from subprocess import Popen, PIPE
+from bot import Bot
 import time
-from bot.bot import Bot
-from colyseus.client import Client
-from colyseus.room import Room
-from config import LOAD_BALANCER_HOST, LOAD_BALANCER_PORT, PLAYER_ID
+import random
+import json
+import re
 
+fr  = open("stdout.txt", "w+")
+fw  = open("stdout.txt", "w+")
+err = open("stderr.txt", "w+")
+in_write = open("stdin.txt", "w+")
 
+p = Popen(["npm", "start"], stdout = fw, stderr = err)
 
-def on_game_start(game, change):
-    print("Game has started:", str(change))
-    if change["value"] == True:
-        bot = Bot(game)
-        bot.start()
+out = ""
+while 1:
+    if p.poll() != None:
+        break
+    out += fr.read()
 
-def on_game_over(change):
-    print("Game is over:", str(change))
-    # Once the game of the player is over, wait for 5 seconds then join another game.
-    if change["value"] == True:
-        time.sleep(5)
-        join_game()
+    if "</END>" not in out:
+        time.sleep(0.1)
+        continue
 
+    print(out)
+    
+    data = out[:out.rfind("</END>")]
+    data = data[data.rfind("<START>")+len("<START>"):].strip()
+    try:
+        game_state = json.loads(data)
+        out = out[out.rfind("</END>")+len("</END>"):]
 
-def on_error(error):
-    print("[Game] An error occurred with the socket:", error)
+        choice = Bot.do_action(game_state)
+        in_write.write(choice + "\n")
+        in_write.flush()
+        print("Sent: " + choice)
+    except:
+        pass 
 
-def on_close():
-    print("### closed ###")
-
-def on_join(game):
-    print("Socket connection opened!")
-    print("Bot has joined game ", game.id)
-
-
-
-def join_game():
-    client = Client("ws://192.168.0.103:3000")
-
-    game = client.join("dci", { "isPlaying": True, "id": PLAYER_ID })
-
-    game.on_join.add(lambda: on_join(game))
-    game.on_error.add(on_error)
-    game.listen("hasStarted", lambda change: on_game_start(game, change))
-    game.listen("isOver", on_game_over)
-    client.conn.run_forever()
-    """ game.listen("hasStarted", (change: DataChange) => {
-        if (change.value === true) {
-            console.log("Game has started.");
-            bot.start();
-        }
-    });
-
-    game.listen("isOver", (change: DataChange) => {
-        if (change.value === true) {
-            console.log("Game is over.");
-            cleanUpResources();
-            joinGame();
-        }
-    }); """
-
-join_game()
+print("terminated")

@@ -8,9 +8,11 @@
             "type": "node",
             "request": "launch",
             "name": "Bot",
-            "program": "${workspaceFolder}\\dist\\index.js",
+            "program": "${workspaceFolder}/dist/index.js",
             "preLaunchTask": "tsc: build - tsconfig.json",
-            "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+            "outFiles": [
+                "${workspaceFolder}/dist/**/*.js"
+            ],
             "console": "integratedTerminal"
         }
     ]
